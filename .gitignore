@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Editors / IDEs
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Claude Code harness files
+CLAUDE.md
+MEMORY.md
+.claude/

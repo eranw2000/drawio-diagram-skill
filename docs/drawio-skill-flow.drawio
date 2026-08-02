@@ -1,0 +1,97 @@
+<mxfile host="drawio-diagram-skill" type="device">
+  <diagram name="draw-diagram flow" id="flow1">
+    <mxGraphModel dx="1500" dy="620" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="draw-diagram: author it, render it, look at it" style="text;html=1;whiteSpace=wrap;fontSize=20;fontStyle=1;fontColor=#0050b3;fontFamily=Helvetica;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="&lt;b&gt;Legend&lt;/b&gt;&lt;br&gt;Green: start and finish&lt;br&gt;Blue: a step you perform&lt;br&gt;Red diamond: the check that gates the report&lt;br&gt;Dashed red arrow: fix and re-render" style="text;html=1;whiteSpace=wrap;rounded=0;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontFamily=Helvetica;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="20" width="340" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="start" value="Diagram needed" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="stage1" value="1. Author" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#0050b3;fontStyle=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;dashed=1;strokeWidth=2;fontFamily=Helvetica;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="230" y="140" width="300" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="Load the grammar in DRAWIO_DIAGRAMS.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="255" y="200" width="250" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="Write the .drawio XML by hand" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="255" y="300" width="250" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="stage2" value="2. Verify" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#0050b3;fontStyle=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;dashed=1;strokeWidth=2;fontFamily=Helvetica;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="580" y="140" width="380" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" value="render.py: is it a well-formed draw.io document?" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="605" y="200" width="330" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="Advisory checks: box overlaps, unwrappable text, compressed pages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="605" y="275" width="330" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="Export the PNG and read the image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="605" y="350" width="330" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gate" value="Renders as intended?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="255" width="180" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="done" value="Report the source and image paths" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="280" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="footer" value="Validation is pure standard library, so it runs with nothing installed. Only the export needs the draw.io desktop engine, and a missing renderer exits 3 with the install command for your platform, leaving a valid and editable file behind. The advisory checks catch causes, not consequences: reading the rendered image is still the real check." style="text;html=1;whiteSpace=wrap;rounded=0;fillColor=#fffbe6;strokeColor=#d6b656;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontFamily=Helvetica;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="1420" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="start" target="a1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#0050b3;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="a2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#0050b3;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a2" target="b1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="555" y="335" />
+              <mxPoint x="555" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#0050b3;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="b1" target="b2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#0050b3;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="b2" target="b3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#0050b3;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="b3" target="gate">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="985" y="380" />
+              <mxPoint x="985" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82b366;strokeWidth=2;fontFamily=Helvetica;fontSize=11;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gate" target="done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="no, fix the XML and re-render" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#b85450;strokeWidth=2;dashed=1;fontFamily=Helvetica;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="gate" target="a2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1100" y="495" />
+              <mxPoint x="380" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
