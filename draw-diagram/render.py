@@ -17,6 +17,7 @@ Exit codes: 0 ok, 1 invalid XML / not a drawio file, 2 export failed,
 3 export skipped because no renderer found (validation still passed).
 """
 import argparse
+import math
 import os
 import re
 import shutil
@@ -123,6 +124,7 @@ def validate(path):
     for label, page_cells in pages:
         check_geometry(page_cells, page=label if multi else None)
         check_text_wrap(page_cells, page=label if multi else None)
+        check_text_height(page_cells, page=label if multi else None)
     return nodes, edges
 
 
@@ -255,11 +257,19 @@ def check_geometry(cells, tol=2.0, page=None):
     return len(hits)
 
 
+_BLOCK_SPLIT = re.compile(r"\n|<br\s*/?>|</?(?:div|p|li|tr|h[1-6])\b[^>]*>", re.I)
+
+
 def _lines(cell):
-    """Label split into rendered lines, HTML tags stripped."""
+    """Label split into rendered lines, HTML tags stripped.
+
+    Splits on the block tags the draw.io UI emits, not only on <br>. A label typed
+    in the app arrives as <div> or <p> blocks, so a <br>-only split reads a
+    multi-line label as one very long line and both text checks misjudge it.
+    """
     raw = cell.get("value") or ""
-    parts = re.split(r"\n|<br\s*/?>", raw)
-    return [re.sub(r"<[^>]+>", "", p).strip() for p in parts]
+    parts = _BLOCK_SPLIT.split(raw)
+    return [re.sub(r"<[^>]+>", "", p).replace("&nbsp;", " ").strip() for p in parts]
 
 
 def check_text_wrap(cells, slack=1.15, char_em=0.5, page=None):
@@ -309,6 +319,69 @@ def check_text_wrap(cells, slack=1.15, char_em=0.5, page=None):
               file=sys.stderr)
     return len(hits)
 
+
+def check_text_height(cells, slack=1.2, char_em=0.5, line_em=1.35, page=None):
+    """Warn on any labelled box whose text needs more VERTICAL space than the box has.
+
+    check_text_wrap catches a long line running out the SIDE of a plain `text;` cell.
+    This catches the other direction, and it is the one that bites when you EDIT a
+    diagram: you add a sentence to an existing note and the box keeps its authored
+    height, so the extra lines render straight through the bottom border and over
+    whatever sits below. Nothing reports it. The XML is valid, the export succeeds,
+    and the geometry checker is happy because the BOXES do not overlap, only the
+    spilled text does. That is exactly how a broken diagram passes every check.
+
+    It also covers shape cells, not just `text;` ones, because the boxes that carry
+    body copy (legends, trust statements, footers) are usually ordinary rectangles
+    and were skipped entirely by the width check.
+
+    Real font metrics are unavailable, so this estimates: each authored line wraps
+    into ceil(chars * fontSize * char_em / usable width) visual lines, and each
+    visual line costs fontSize * line_em. `slack` keeps it quiet on near misses.
+    Advisory like the others: prints, returns a count, never exits non-zero.
+    """
+    hits = []
+    for c in cells:
+        if c.get("vertex") != "1" or _is_overlay(c):
+            continue
+        lines = [ln for ln in _lines(c) if ln]
+        if not lines:
+            continue
+        geo = c.find("mxGeometry")
+        if geo is None:
+            continue
+        try:
+            w = float(geo.get("width") or 0)
+            h = float(geo.get("height") or 0)
+        except (TypeError, ValueError):
+            continue
+        if w <= 0 or h <= 0:
+            continue
+        style = c.get("style") or ""
+        m = re.search(r"fontSize=(\d+(?:\.\d+)?)", style)
+        size = float(m.group(1)) if m else 12.0
+        pad = 0.0
+        for key in ("spacingLeft", "spacingRight", "spacingTop"):
+            sm = re.search(rf"{key}=(\d+(?:\.\d+)?)", style)
+            if sm:
+                pad += float(sm.group(1))
+        usable = max(w - pad - 8.0, 20.0)
+        visual = 0
+        for ln in lines:
+            est = len(ln) * size * char_em
+            visual += max(1, math.ceil(est / usable))
+        needed = visual * size * line_em
+        if needed > h * slack:
+            hits.append((_label(c), needed, h, visual))
+    if hits:
+        print(f"WARNING: {len(hits)} box(es){_where(page)} whose text needs more height "
+              f"than the box has, so the text renders past the border:", file=sys.stderr)
+        for label, needed, h, visual in hits[:10]:
+            print(f"  '{label or '(unlabelled)'}'  (~{visual} lines, ~{needed:.0f}px of text "
+                  f"in a {h:.0f}px box)", file=sys.stderr)
+        print("  Grow the box height, widen it, or cut the text. Look at the PNG.",
+              file=sys.stderr)
+    return len(hits)
 
 def export(binary, src, out, fmt, scale, border):
     cmd = [
