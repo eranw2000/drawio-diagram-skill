@@ -37,10 +37,11 @@ Mermaid, ASCII art, or Graphviz unless I explicitly ask for them.
 
 ## What the validator checks
 
-Running `render.py` on a file always validates it, and the export is a separate step that can be skipped with `--validate-only`. Beyond well-formedness, three advisory checks run. None of them blocks, and none replaces looking at the rendered image:
+Running `render.py` on a file always validates it, and the export is a separate step that can be skipped with `--validate-only`. Beyond well-formedness, four advisory checks run. None of them blocks, and none replaces looking at the rendered image:
 
 - **Partial box overlaps**, compared per page and in absolute coordinates. Containment is fine, since a stage container is supposed to hold its boxes. A partial overlap is the bug, because it renders as text printed over text. Icons deliberately laid over a node are skipped, and geometry is resolved through the parent chain, so a box you dragged into a container in the draw.io UI is compared in the same coordinate space as everything else.
-- **Text cells that cannot wrap**, where the label looks wider than the cell. A `text;html=1` cell without `whiteSpace=wrap` runs its prose straight past the cell edge while XML validation and the export both succeed. The estimate has no real font metrics behind it, so it allows slack and stays quiet on short titles.
+- **Cells that cannot wrap**, where the label looks wider than the cell. A cell without `whiteSpace=wrap` runs its prose straight past the cell edge while XML validation and the export both succeed. The estimate has no real font metrics behind it, so it allows slack and stays quiet on short titles. It covers shape cells and not only `text;` ones, because the boxes that carry body copy (legends, notes, footers) are usually ordinary rectangles.
+- **Cells whose text needs more height than the box**, the vertical counterpart, and the one that bites when you edit an existing diagram. Add a sentence to a note and the box keeps its authored height, so the extra lines render through the bottom border and over whatever sits below. The overlap check above cannot see it, because the boxes do not overlap; only the spilled text does.
 - **Compressed pages**, whose content the cell-level checks cannot read at all. Without this you get "0 vertices, the diagram is empty" on a perfectly good file. Turn off Extras > Compressed in the draw.io app and re-save.
 
 ```

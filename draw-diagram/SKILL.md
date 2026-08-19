@@ -33,11 +33,14 @@ python3 ~/.claude/skills/draw-diagram/render.py <path/to/file.drawio>
 
 This validates the XML is well-formed and a real draw.io document (printing page, node, and edge counts), then exports a PNG next to the source.
 
-Three advisory checks run with the validation. None of them block, and none replaces looking at the image:
+Four advisory checks run with the validation. None of them block, and none replaces looking at the image:
 
 - **Partial box overlaps**, per page, in absolute coordinates. Containment is fine, since a stage container holds its boxes. Partial overlap is the bug, because it renders as text printed over text. Icons deliberately laid over a node are skipped.
-- **Text cells that cannot wrap**, where the label looks wider than the cell. A `text;html=1` cell without `whiteSpace=wrap` runs its prose past the cell edge while validation and export both succeed.
+- **Cells that cannot wrap**, where the label looks wider than the cell. A cell without `whiteSpace=wrap` runs its prose past the cell edge while validation and export both succeed. This used to be limited to `text;` cells, on the assumption that shape cells are authored with wrap already on. They are not: the boxes carrying body copy (legends, notes, footers) are ordinary rectangles, so the check skipped exactly the cells most likely to hold a long sentence.
+- **Cells whose text needs more height than the box**, the vertical counterpart. This is the one that bites when you EDIT a diagram: you add a sentence to an existing note, the box keeps its authored height, and the extra lines render through the bottom border and over whatever sits below. Nothing reports it. The XML is valid, the export succeeds, and the overlap check is happy because the BOXES do not overlap, only the spilled text does.
 - **Compressed pages**, whose content the cell-level checks cannot read at all. Turn off Extras > Compressed in the draw.io app and re-save.
+
+Both text checks split a label on `<div>`, `<p>` and `<li>` as well as `<br>`, because the draw.io UI emits block tags rather than line breaks, and a `<br>`-only split reads a multi-line label as one very long line.
 
 Options:
 
