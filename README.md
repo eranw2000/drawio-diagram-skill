@@ -26,14 +26,14 @@ cp -R drawio-diagram-skill/draw-diagram ~/.claude/skills/
 
 The grammar file lives inside the skill directory, so the skill stays self-contained and there is nothing else to wire up.
 
-To make draw.io your default for every diagram rather than something you ask for by name, add a line to your `~/.claude/CLAUDE.md`:
+To make draw.io your default for every diagram rather than something you ask for by name, copy the rule file into your rules folder:
 
-```markdown
-Whenever a diagram is needed (architecture, data flow, sequence, decision tree,
-system map, ER diagram, state machine, infrastructure layout, anything visual),
-produce it as a draw.io file via the draw-diagram skill. Do not default to
-Mermaid, ASCII art, or Graphviz unless I explicitly ask for them.
+```bash
+mkdir -p ~/.claude/rules
+cp drawio-diagram-skill/rules/drawio-diagrams.md ~/.claude/rules/
 ```
+
+Claude Code loads every `.md` file in `~/.claude/rules/` at the start of each session, in every project.
 
 ## What the validator checks
 
