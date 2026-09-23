@@ -292,7 +292,13 @@ def check_text_wrap(cells, slack=1.15, char_em=0.5, page=None):
         if c.get("vertex") != "1":
             continue
         style = c.get("style") or ""
-        if not re.search(r"(^|;)\s*text\s*;", style) or "whiteSpace=wrap" in style:
+        # Any cell without whiteSpace=wrap renders each authored line as ONE line and
+        # lets it run out the side. This used to be filtered to `text;` cells only, on
+        # the assumption that shape cells are authored with wrap already on. They are
+        # not: the boxes that carry body copy (legends, notes) are ordinary rectangles,
+        # so the check skipped exactly the cells most likely to hold a long sentence.
+        # Filter on the property that actually causes the bug, not on the shape.
+        if "whiteSpace=wrap" in style or _is_overlay(c):
             continue
         geo = c.find("mxGeometry")
         if geo is None:
