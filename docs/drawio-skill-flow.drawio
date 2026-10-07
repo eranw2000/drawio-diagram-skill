@@ -23,7 +23,7 @@
         <mxCell id="a1" value="Load the grammar in DRAWIO_DIAGRAMS.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="255" y="200" width="250" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="a2" value="Write the .drawio XML by hand" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="a2" value="Write the .drawio XML: by hand up to about ten boxes, past that a generator built on drawio_build.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="255" y="300" width="250" height="70" as="geometry" />
         </mxCell>
 
@@ -33,10 +33,10 @@
         <mxCell id="b1" value="render.py: is it a well-formed draw.io document?" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="605" y="200" width="330" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="b2" value="Advisory checks: box overlaps, unwrappable text, compressed pages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="b2" value="Nine advisory checks: overlaps, text width and height, edge ends and fans, paint order, Hebrew direction, label text, compressed pages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="605" y="275" width="330" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="b3" value="Export the PNG and read the image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="b3" value="Export every page, with full-size crops of a big page; read every crop, then the page" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="605" y="350" width="330" height="60" as="geometry" />
         </mxCell>
 
