@@ -13,8 +13,9 @@ Source: [docs/drawio-skill-flow.drawio](docs/drawio-skill-flow.drawio) (editable
 ## What is in here
 
 - **`draw-diagram/SKILL.md`** the skill itself. Loads the grammar, writes the XML, renders, looks at the image, reports where the source and the image were saved.
-- **`draw-diagram/DRAWIO_DIAGRAMS.md`** the visual grammar: shape vocabulary, a seven-color palette, the layout skeleton (header strip, stage containers, data store column, footer), arrow conventions, and the decision-hub temporal-ordering defenses. It also carries the traps that only surface at render time, including the CLI exporter silently refusing `;base64` data URIs and text cells that do not wrap.
-- **`draw-diagram/render.py`** validates a `.drawio` file and exports it to PNG, SVG, or PDF. Pure standard library for the validation half, so it runs anywhere with no install.
+- **`draw-diagram/DRAWIO_DIAGRAMS.md`** the rules and the visual grammar. It opens with a checklist, then each rule with the case behind it (arrows, container order, label escaping, text wrap and height, cylinders and documents, right-to-left labels, decision-hub timing, brand logos), then the grammar itself: shape vocabulary, a seven-color palette, the layout skeleton (header strip, stage containers, data store column, footer) and arrow colors.
+- **`draw-diagram/render.py`** validates a `.drawio` file and exports every page to PNG, SVG, or PDF. Pure standard library for the validation half, so it runs anywhere with no install.
+- **`draw-diagram/drawio_build.py`** helpers for a script that generates a `.drawio` file: one label escape, a box height estimate that matches the validator's own, column stacking, containers that grow to hold their contents, edges that refuse a missing end and get their own exit points, and a `write()` that runs the validator. Standard library only.
 
 ## Install
 
@@ -37,12 +38,17 @@ Claude Code loads every `.md` file in `~/.claude/rules/` at the start of each se
 
 ## What the validator checks
 
-Running `render.py` on a file always validates it, and the export is a separate step that can be skipped with `--validate-only`. Beyond well-formedness, four advisory checks run. None of them blocks, and none replaces looking at the rendered image:
+Running `render.py` on a file always validates it, and the export is a separate step that can be skipped with `--validate-only`. Beyond well-formedness, nine advisory checks run. None of them changes the exit code, and none replaces looking at the rendered image:
 
 - **Partial box overlaps**, compared per page and in absolute coordinates. Containment is fine, since a stage container is supposed to hold its boxes. A partial overlap is the bug, because it renders as text printed over text. Icons deliberately laid over a node are skipped, and geometry is resolved through the parent chain, so a box you dragged into a container in the draw.io UI is compared in the same coordinate space as everything else.
 - **Cells that cannot wrap**, where the label looks wider than the cell. A cell without `whiteSpace=wrap` runs its prose straight past the cell edge while XML validation and the export both succeed. The estimate has no real font metrics behind it, so it allows slack and stays quiet on short titles. It covers shape cells and not only `text;` ones, because the boxes that carry body copy (legends, notes, footers) are usually ordinary rectangles.
 - **Cells whose text needs more height than the box**, the vertical counterpart, and the one that bites when you edit an existing diagram. Add a sentence to a note and the box keeps its authored height, so the extra lines render through the bottom border and over whatever sits below. The overlap check above cannot see it, because the boxes do not overlap; only the spilled text does.
-- **Compressed pages**, whose content the cell-level checks cannot read at all. Without this you get "0 vertices, the diagram is empty" on a perfectly good file. Turn off Extras > Compressed in the draw.io app and re-save.
+- **Edge ends that name no cell**, which draw.io draws as nothing while the edge count still includes them.
+- **Edges in different colors leaving one box at the same exit point**, where the last one drawn covers the others.
+- **A box hidden under a filled box painted after it**, since draw.io paints in document order.
+- **A Hebrew line that starts or ends with a Latin run** in a label that sets no text direction, so the run renders at the wrong end.
+- **Label text with an em dash, a curly quote, or a box-drawing character.**
+- **Compressed pages**: the cell-level checks read uncompressed files. Without this check you get "0 vertices, the diagram is empty" on a perfectly good file. Turn off Extras > Compressed in the draw.io app and re-save.
 
 ```
 $ python3 ~/.claude/skills/draw-diagram/render.py architecture.drawio
@@ -50,7 +56,11 @@ VALID: draw.io document, 1 page(s), 24 node(s), 19 edge(s).
 EXPORTED: architecture.png
 ```
 
-Exit codes: `0` fine, `1` invalid XML or not a draw.io file, `2` the export failed, `3` the export was skipped because no renderer was found, with validation still passing.
+A file with several pages exports every page (`architecture-p1.png`, `architecture-p2.png`, ...). A page wider or taller than 2000 px is also cut into full-size crops, one per stage container plus the header and footer bands, in a folder next to the picture, so its small labels can be read. Every export ends with a `LOOK FOR` line naming what no check can see.
+
+draw.io stops drawing a PNG past about 32 megapixels while still reporting success. Without `--scale`, `render.py` picks a scale per page that stays under that limit, and a PNG that still comes out cut off is reported as a failed export.
+
+Exit codes: `0` fine, `1` invalid XML or not a draw.io file, `2` the export failed (including a cut-off PNG), `3` the export was skipped because no renderer was found, with validation still passing.
 
 ## Renderer dependency
 
