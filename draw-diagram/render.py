@@ -415,7 +415,7 @@ def check_text_height(cells, slack=1.2, char_em=0.5, line_em=1.35, page=None):
             est = len(ln) * size * char_em
             visual += max(1, math.ceil(est / usable))
         needed = visual * size * line_em
-        # E5: a cylinder's caps and a document's wavy foot take height the text
+        # A cylinder's caps and a document's wavy foot take height the text
         # cannot use (measured on draw.io renders, DRAWIO_DIAGRAMS.md "Cylinders and
         # documents need more height than a rectangle").
         shape = _shape_name(*_style(c))
@@ -733,7 +733,7 @@ def _visible_lines(cell):
 
 
 def check_hebrew_direction(cells, page=None):
-    """E6: warn on a Hebrew label line that starts or ends with a Latin run (a file
+    """Warn on a Hebrew label line that starts or ends with a Latin run (a file
     name, an extension, a code word) while the label sets no direction.
 
     A label's base direction is left-to-right unless it says otherwise, so the
@@ -792,7 +792,7 @@ def _label_text(cell):
 
 
 def check_label_prose(cells, page=None):
-    """E7: warn on labels carrying a character the style check bans (em dash,
+    """Warn on labels carrying a character the style check bans (em dash,
     curly quote, box-drawing), since a script-generated diagram never goes
     through an editor's or CI's prose checks. Advisory: prints, returns a count.
 

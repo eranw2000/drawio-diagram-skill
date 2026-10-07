@@ -61,6 +61,8 @@ draw.io paints cells in document order, so a stage container or band written aft
 A label is HTML inside an XML attribute. A raw `value="<b>Title</b>"` is not well-formed XML, and `render.py` refuses the file with `INVALID: not well-formed (invalid token)`, naming a line rather than a cell, which is slow to trace in a generated file. Build the label as real HTML with its own text HTML-escaped, then XML-escape the whole string, in one helper applied where the cell is written:
 
 ```python
+from xml.sax.saxutils import escape
+
 def attr(text):                      # text already contains real <b>, <br>
     return escape(text, {'"': "&quot;"})
 ```
