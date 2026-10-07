@@ -49,7 +49,7 @@ def _load_render():
     already holds, and through a symlink it looks beside the link."""
     here = os.path.dirname(os.path.realpath(__file__))
     src = os.path.join(here, "render.py")
-    name = "_drawio_build_render_" + hashlib.sha1(src.encode()).hexdigest()[:12]
+    name = "_drawio_build_render_" + hashlib.sha256(src.encode()).hexdigest()[:12]
     if name in sys.modules:
         return sys.modules[name]
     spec = importlib.util.spec_from_file_location(name, src)
