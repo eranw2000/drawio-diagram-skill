@@ -14,6 +14,7 @@ The rules and the full visual grammar live in `DRAWIO_DIAGRAMS.md`, next to this
 
 Key points from it (reminders, not a replacement for reading it):
 - Save the `.drawio` source alongside any rendered PNG/SVG, inside the repo or project folder it documents, so it stays editable.
+- When the PNG goes into a README, a document or a slide, give it alt text that says what the diagram shows in one sentence, never its file name; a diagram one sentence cannot carry also gets its steps as text next to it.
 - Single wide page (2400+ px), header strip of 3 to 5 boxes, stage containers left-to-right, data-store column on the right, footer notes.
 - Reuse the palette for groupings/containers even when using built-in shape libraries (`aws4`, `mscae`, `azure`, `gcp`, `cisco`) for domain icons.
 - When a diagram in the same family already exists, copy it and rewrite the contents rather than starting from scratch.
