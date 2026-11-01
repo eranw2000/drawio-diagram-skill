@@ -51,6 +51,11 @@ a cut-off PNG), 3 export skipped because no renderer found (validation still
 passed).
 """
 import argparse
+import sys
+# Read and write UTF-8 on every OS: the Windows default code page misreads it.
+for _stream in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 import json
 import math
 import os
@@ -1155,7 +1160,7 @@ def ink_check(png, border, scale, limit_mp=RASTER_LIMIT_MP, cells=None, backgrou
                               "the image.")
     Image, ImageChops = pil
     Image.MAX_IMAGE_PIXELS = None
-    with Image.open(png) as im:
+    with Image.open(png, encoding="utf-8") as im:
         W, H = im.size
         mp = W * H / 1e6
         if mp <= limit_mp:
@@ -1257,7 +1262,7 @@ def export(binary, src, out, fmt, scale, border, page_index=None, all_pages=Fals
     # Electron apps need these to run without a sandboxed renderer / GPU.
     cmd += ["--no-sandbox", "--disable-gpu"]
     cmd.append(src)
-    res = subprocess.run(cmd, capture_output=True, text=True)
+    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if res.returncode != 0 or not os.path.exists(out):
         return False, (res.stdout + res.stderr).strip()
     return True, ""
@@ -1615,7 +1620,7 @@ def _prepare_crops_dir(png):
         # way leaves no unmarked folder of ours under the page's own name.
         made = tempfile.mkdtemp(prefix="." + os.path.basename(folder) + ".new-",
                                 dir=os.path.dirname(folder) or ".")
-        with open(os.path.join(made, CROPS_MARKER), "w") as f:
+        with open(os.path.join(made, CROPS_MARKER), "w", encoding="utf-8", newline="") as f:
             f.write("This folder is made and refilled by draw-diagram's render.py. "
                     "Files named crop-NN....png are replaced on every export.\n")
         try:
@@ -1643,14 +1648,14 @@ def _sips_crops(png, W, H, targets):
     done, current = [], None
     try:
         res = subprocess.run(["sips", "--padToHeightWidth", str(H + 2), str(W + 2),
-                              png, "--out", padded], capture_output=True, text=True)
+                              png, "--out", padded], capture_output=True, text=True, encoding="utf-8", errors="replace")
         if res.returncode != 0 or _png_size(padded) != (W + 2, H + 2):
             return []
         for path, label, (l, t, r, b) in targets:
             current = _claim(path)
             res = subprocess.run(["sips", "-c", str(b - t), str(r - l), "--cropOffset",
                                   str(t + 1), str(l + 1), padded, "--out", path],
-                                 capture_output=True, text=True)
+                                 capture_output=True, text=True, encoding="utf-8", errors="replace")
             if not (res.returncode == 0 and _png_size(path) == (r - l, b - t)):
                 raise OSError(f"sips did not cut {path}")
             done.append((path, label))
@@ -1703,7 +1708,7 @@ def _rest_regions(png, regions, background, pil):
         return any(l <= x0 and t <= y0 and r >= x1 and b >= y1 for _n, (l, t, r, b) in regions)
 
     ink = set()
-    with Image.open(png) as im:
+    with Image.open(png, encoding="utf-8") as im:
         W, H = im.size
         bg = _background(im, background)
         for ty in range(0, H, scan):
@@ -1812,7 +1817,7 @@ def write_crops(png, cells, scale, border, background=None):
     try:
         if pil:
             Image = pil[0]
-            with Image.open(png) as im:
+            with Image.open(png, encoding="utf-8") as im:
                 for path, label, box in targets:
                     current = _claim(path)
                     im.crop(box).save(path)

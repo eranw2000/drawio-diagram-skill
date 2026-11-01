@@ -338,12 +338,12 @@ class Diagram:
         """Write the file; with `check`, run render.py --validate-only on it and
         print what it says. Returns render.py's exit status (0 when not run)."""
         text = self.xml()
-        with open(out, "w", encoding="utf-8") as f:
+        with open(out, "w", encoding="utf-8", newline="") as f:
             f.write(text)
         if not check:
             return 0
         res = subprocess.run([sys.executable, _render.__file__, out, "--validate-only"],
-                             capture_output=True, text=True)
+                             capture_output=True, text=True, encoding="utf-8", errors="replace")
         sys.stdout.write(res.stdout)
         sys.stderr.write(res.stderr)
         return res.returncode
