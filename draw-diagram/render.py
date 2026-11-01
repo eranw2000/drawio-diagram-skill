@@ -53,9 +53,10 @@ passed).
 import argparse
 import sys
 # Read and write UTF-8 on every OS: the Windows default code page misreads it.
-for _stream in (sys.stdin, sys.stdout, sys.stderr):
-    if hasattr(_stream, "reconfigure"):
-        _stream.reconfigure(encoding="utf-8", errors="replace")
+if __name__ == "__main__":
+    for _stream in (sys.stdin, sys.stdout, sys.stderr):
+        if hasattr(_stream, "reconfigure"):
+            _stream.reconfigure(encoding="utf-8", errors="replace")
 import json
 import math
 import os
@@ -1160,7 +1161,7 @@ def ink_check(png, border, scale, limit_mp=RASTER_LIMIT_MP, cells=None, backgrou
                               "the image.")
     Image, ImageChops = pil
     Image.MAX_IMAGE_PIXELS = None
-    with Image.open(png, encoding="utf-8") as im:
+    with Image.open(png) as im:
         W, H = im.size
         mp = W * H / 1e6
         if mp <= limit_mp:
@@ -1708,7 +1709,7 @@ def _rest_regions(png, regions, background, pil):
         return any(l <= x0 and t <= y0 and r >= x1 and b >= y1 for _n, (l, t, r, b) in regions)
 
     ink = set()
-    with Image.open(png, encoding="utf-8") as im:
+    with Image.open(png) as im:
         W, H = im.size
         bg = _background(im, background)
         for ty in range(0, H, scan):
@@ -1817,7 +1818,7 @@ def write_crops(png, cells, scale, border, background=None):
     try:
         if pil:
             Image = pil[0]
-            with Image.open(png, encoding="utf-8") as im:
+            with Image.open(png) as im:
                 for path, label, box in targets:
                     current = _claim(path)
                     im.crop(box).save(path)
